@@ -54,8 +54,8 @@ let webpackConfig = {
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'js/[name].[hash].js',
-        //  cdn http://cdn.your.com/static
-        publicPath: NODE_ENV == dev ? '/' : 'https://nannongrousong.xin/app/'
+        //  cdn 
+        publicPath: NODE_ENV == dev ? '/' : 'https://cdn.your.com/static'
     },
     resolve: {
         extensions: ['.js', '.css', '.json'],
