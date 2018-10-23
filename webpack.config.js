@@ -91,7 +91,7 @@ let webpackConfig = {
                     plugins: [
                         'transform-decorators-legacy',
                         'transform-runtime',
-                        ["import", [{ libraryName: "antd-mobile", style: "css" }, { libraryName: "antd", style: "css" }]],
+                        ["import", [{ libraryName: "antd", style: "css" }]],
                         'syntax-dynamic-import',
                         'react-hot-loader/babel']
                 }

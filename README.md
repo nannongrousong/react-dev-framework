@@ -1,5 +1,14 @@
 ## NetSS客户端
 
+### 介绍
+
+React前端开发脚手架
+*   antdesign 优秀的界面库
+*   支持本地mock数据，与后端并行开发
+*   支持代理
+*   代码分割，按需加载文件
+*   webpack/vscode 支持动态alias
+
 ### 环境
 
 nodejs/npm
@@ -20,11 +29,3 @@ nodejs/npm
 ### 发布
 *   npm run build 打包发布
 *   由于使用browserHistory，会导致url在不刷新页面情况下发生变化，此时服务端不作配置时刷新页面会404.因为服务端也需要做适应配置，将前端所有请求直接打到index.html
-
-### 特色
-*   多tab切换暂存数据，减少网络请求
-*   支持本地mock数据，与后端并行开发
-*   支持代理
-*   代码分割，按需加载文件
-*   webpack/vscode 支持动态alias
-
