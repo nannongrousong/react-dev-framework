@@ -5,7 +5,7 @@ module.exports = {
     entries: [{
         name: 'app',
         entry: 'src/app/index.js',
-        title: '后台登录',
+        title: 'Demo',
         template: 'src/app/index.html',
         favicon: 'src/app/favicon.ico'
     }],

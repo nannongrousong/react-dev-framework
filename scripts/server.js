@@ -65,7 +65,7 @@ if (env == dev) {
 
     app.listen(port, () => {
         console.log(`server is running at ${port}!\n`);
-        open(`http://localhost:${port}`);
+        open(`http://localhost:${port}/app/demo`);
     });
 } else {
     //  build directly

@@ -1,8 +1,9 @@
 module.exports = {
-    'POST /api/Sys_Login/CMS_Login': {
-        Code: 0,
+    'GET /api/User_Info': {
+        Code: true,
         Data: {
-            token: 'helloworld'
+            loginName: '南农肉松',
+            roleName: '管理员'
         },
         desc: '成功'
     }
