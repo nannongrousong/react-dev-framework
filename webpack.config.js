@@ -2,12 +2,14 @@ const path = require('path');
 const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const WebpackBundleAnalyzer = require('webpack-bundle-analyzer');
 const webpack = require('webpack');
 const fs = require('fs');
 const projectConfig = require('./project.config');
 const { NODE_ENV } = process.env;
 const { dev, prod, entries } = projectConfig;
 const pathSep = path.sep;
+const IS_DEV = NODE_ENV == dev;
 
 //  webpack alias
 const rootPath = path.resolve(__dirname, 'src');
@@ -27,7 +29,7 @@ const recurReadDir = (rootPath) => {
 let jsconfigPaths = {};
 let allDirs = recurReadDir(rootPath);
 let webpackAlias = allDirs.reduce((previous, current) => {
-    let key = current.substring(rootPath.length + 1).split(pathSep).join('_').toUpperCase();    
+    let key = current.substring(rootPath.length + 1).split(pathSep).join('_').toUpperCase();
     previous[key] = current;
     jsconfigPaths[key + '/*'] = [current + pathSep + '*'];
     return previous;
@@ -39,7 +41,7 @@ jsconfigContent.compilerOptions.paths = jsconfigPaths;
 fs.writeFileSync(path.resolve(__dirname, 'jsconfig.json'), JSON.stringify(jsconfigContent));
 
 let webpackEntry = entries.reduce((previous, current) => {
-    if (NODE_ENV == dev) {
+    if (IS_DEV) {
         previous[current.name] = ['webpack-hot-middleware/client?quiet=true&reload=true', 'babel-polyfill', path.resolve(__dirname, current.entry)];
     } else {
         previous[current.name] = ['babel-polyfill', path.resolve(__dirname, current.entry)];
@@ -49,29 +51,21 @@ let webpackEntry = entries.reduce((previous, current) => {
 
 let webpackConfig = {
     mode: NODE_ENV,
-    devtool: NODE_ENV == dev ? 'source-map' : '',
+    devtool: IS_DEV ? 'source-map' : '',
     entry: webpackEntry,
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'js/[name].[hash].js',
-        //  cdn 
-        publicPath: NODE_ENV == dev ? '/' : 'https://cdn.your.com/static'
+        filename: `js/[name].[${IS_DEV ? 'hash' : 'chunkhash'}:8].js`,
+        chunkFilename: `js/[name].[${IS_DEV ? 'hash' : 'chunkhash'}:8].chunk.js`,
+        // or cdn  https://cdn.your.com/static
+        publicPath: IS_DEV ? '/' : './'
     },
     resolve: {
         extensions: ['.js', '.css', '.json'],
         alias: webpackAlias
     },
     optimization: {
-        splitChunks: {
-            chunks: 'all',
-            cacheGroups: {
-                commons: {
-                    test: /node_modules/,
-                    name: "vendor",
-                    chunks: "all"
-                }
-            }
-        }
+
     },
     module: {
         rules: [
@@ -91,7 +85,7 @@ let webpackConfig = {
                     plugins: [
                         'transform-decorators-legacy',
                         'transform-runtime',
-                        ["import", [{ libraryName: "antd", style: "css" }]],
+                        ['import', [{ libraryName: 'antd', style: 'css' }]],
                         'syntax-dynamic-import',
                         'react-hot-loader/babel']
                 }
@@ -101,7 +95,7 @@ let webpackConfig = {
                 loader: 'url-loader',
                 options: {
                     limit: 8192,
-                    name: 'images/[name].[hash].[ext]'
+                    name: `images/[name].[hash:8].[ext]`
                 }
             },
             {
@@ -114,7 +108,7 @@ let webpackConfig = {
                         options: {
                             importLoaders: 1,
                             modules: true,
-                            localIdentName: '[name]_[local]_[hash:base64:5]'
+                            localIdentName: `[name]_[local]_[hash:6]`
                         }
                     },
                     {
@@ -143,7 +137,7 @@ let webpackConfig = {
                         options: {
                             importLoaders: 2,
                             modules: true,
-                            localIdentName: '[name]_[local]_[hash:base64:5]'
+                            localIdentName: `[name]_[local]_[hash:6]`
                         }
                     },
                     'less-loader?javascriptEnabled=true',
@@ -172,8 +166,8 @@ let webpackConfig = {
     },
     plugins: [
         new MiniCSSExtractPlugin({
-            filename: 'css/[name].[hash].css',
-            chunkFilename: 'css/[name].[chunkhash].chunk.css'
+            filename: `css/[name].[${IS_DEV ? 'hash' : 'chunkhash'}:8].css`,
+            chunkFilename: `css/[name].[${IS_DEV ? 'hash' : 'chunkhash'}:8].chunk.css`,
         }),
         new CleanWebpackPlugin(['dist/*'], {
             verbose: true,
@@ -185,13 +179,46 @@ let webpackConfig = {
                 inject: true,
                 title: item.title,
                 filename: item.name + '.html',
-                chunks: [item.name, 'vendor'],
-                chunksSortMode: "none",
+                chunks: [item.name, 'vendors', 'manifest'],
+                chunksSortMode: 'none',
                 favicon: path.resolve(__dirname, item.favicon)
             });
-        }),
-        new webpack.HotModuleReplacementPlugin()
+        })
     ]
+}
+
+if (IS_DEV) {
+    webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
+} else {
+    webpackConfig.plugins.push(
+        new WebpackBundleAnalyzer.BundleAnalyzerPlugin(),
+        new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn/)
+    );
+    webpackConfig.optimization = {
+        minimize: true,
+        splitChunks: {
+            chunks: 'async',
+            minSize: 30000,
+            minChunks: 1,
+            maxAsyncRequests: 5,
+            maxInitialRequests: 3,
+            name: true,
+            cacheGroups: {
+                default: {
+                    minChunks: 2,
+                    priority: -20,
+                    reuseExistingChunk: true
+                },
+                vendors: {
+                    test: /[\\/]node_modules[\\/]/,
+                    priority: -10
+                }
+            }
+        },
+        runtimeChunk: {
+            name: 'manifest'
+        }
+    };
 }
 
 module.exports = webpackConfig;

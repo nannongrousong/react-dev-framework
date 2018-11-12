@@ -5,7 +5,8 @@ import { addDemoData } from 'APP_ACTION/demo';
 import { Button } from 'antd';
 import { Load_User_Info } from 'APP_SERVICE/Demo';
 import { errorHandle } from 'APP_UTILS/common';
-
+import styles from 'APP_STYLES/page/demo.less';
+import bigImg from 'APP_IMAGES/big.jpg';
 class Index extends Component {
     state = {
         userInfo: null
@@ -36,6 +37,9 @@ class Index extends Component {
 
         return (
             <div style={{ padding: 20 }}>
+                <div className={styles.header}>测试DEMO</div>
+                {false && <img width={500} height={500} src={bigImg} />}
+
                 <div>
                     <Button className='mb-16' onClick={this.handleAddData}>测试redux(查看console输出)</Button>
                     <h1>测试数据</h1>
