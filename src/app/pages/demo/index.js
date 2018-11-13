@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { addDemoData } from 'APP_ACTION/demo';
-import { Button } from 'antd';
+import { Button, Icon } from 'antd';
 import { Load_User_Info } from 'APP_SERVICE/Demo';
 import { errorHandle } from 'APP_UTILS/common';
 import styles from 'APP_STYLES/page/demo.less';
@@ -38,6 +38,7 @@ class Index extends Component {
         return (
             <div style={{ padding: 20 }}>
                 <div className={styles.header}>测试DEMO</div>
+                <Icon className={styles.header} type='alert' />
                 {false && <img width={500} height={500} src={bigImg} />}
 
                 <div>

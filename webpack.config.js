@@ -62,7 +62,10 @@ let webpackConfig = {
     },
     resolve: {
         extensions: ['.js', '.css', '.json'],
-        alias: webpackAlias
+        alias: {
+            ...webpackAlias,
+            '@ant-design/icons/lib/dist$': path.resolve(__dirname, './src/app/utils/icon.js')
+        }
     },
     optimization: {
 
