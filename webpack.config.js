@@ -36,8 +36,14 @@ let webpackAlias = allDirs.reduce((previous, current) => {
 }, {});
 
 //  write webpack alias into jsconfig.json for vscode intellisense
-let jsconfigContent = require('./jsconfig.json');
-jsconfigContent.compilerOptions.paths = jsconfigPaths;
+let jsconfigContent = {
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "module": "commonjs",
+        "baseUrl": ".",
+        "paths": jsconfigPaths
+    }
+};
 fs.writeFileSync(path.resolve(__dirname, 'jsconfig.json'), JSON.stringify(jsconfigContent));
 
 let webpackEntry = entries.reduce((previous, current) => {

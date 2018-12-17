@@ -16,5 +16,11 @@ module.exports = {
         target: 'http://localhost:10001',
         //  路由重写规则
         pathRewrite: { '^/app/api': '/' }
-    }]
+    }],
+    deployServer: {
+        host: '',
+        username: '',
+        password: '',
+        path: ''
+    }
 }

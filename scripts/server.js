@@ -12,6 +12,7 @@ const { port, dev, prod } = projectConfig;
 const { mode, env = dev } = argObj;
 process.env.NODE_ENV = env;
 const webpackConfig = require('../webpack.config');
+const path = require('path');
 
 if (env == dev) {
     const express = require('express');
@@ -20,7 +21,6 @@ if (env == dev) {
     const app = express();
     const compiler = webpack(webpackConfig);
     const webpackHotMiddleware = require('webpack-hot-middleware');
-    const path = require('path');
     const open = require('opn');
 
     // use:https://www.npmjs.com/package/connect-history-api-fallback#introduction
@@ -69,11 +69,58 @@ if (env == dev) {
     });
 } else {
     //  build directly
-    webpack(webpackConfig, (err, stats) => {
+    webpack(webpackConfig, async (err, stats) => {
         if (err || stats.hasErrors()) {
             console.log('webpack error!', err ? err : stats);
             return;
         }
         console.log('webpack success!');
+
+        if (projectConfig.deployServer) {
+            const { host, username, password, path: deployPath } = projectConfig.deployServer;
+            const localPath = path.resolve(__dirname, '../dist/');
+            const date = new Date();
+            const dateFormat = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}-${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`;
+
+            const nodeSSH = require('node-ssh');
+            const ssh = new nodeSSH();
+            let resData;
+
+            try {
+                console.log('start connect deploy server');
+                resData = await ssh.connect({ host, username, password });
+                console.log('connect server success');
+
+                console.log('start backup old version at deploy server');
+                //  只删除文件不删除目录，不然putDirectory容易出错
+                resData = await ssh.exec(`cp -r ${deployPath} ${deployPath}-${dateFormat} && find ${deployPath} -type f | xargs rm -rf`);
+                console.log('backup success');
+
+                console.log('start upload latest deploy package');
+                let failFiles = [];
+                let successFiles = [];
+                resData = await ssh.putDirectory(localPath, deployPath, {
+                    recursive: true,
+                    tick: function (localPath, remotePath, error) {
+                        if (error) {
+                            failFiles.push(localPath)
+                        } else {
+                            successFiles.push(localPath)
+                        }
+                    }
+                });
+
+                if (!resData) {
+                    console.log('failed transfers', failFiles.join(', '))
+                    console.log('successful transfers', successFiles.join(', '))
+                }
+                console.log('upload success');
+
+                console.log('disconnect deploy server');
+                ssh.dispose();
+            } catch (err) {
+                console.log('deplory error!', err);
+            }
+        }
     })
 }
