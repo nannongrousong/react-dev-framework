@@ -46,7 +46,7 @@ class Index extends Component {
                     <h1>测试数据</h1>
                     <ul>
                         {
-                            demoData.map(({ id, name, sex }, index) => (
+                            demoData && demoData.map(({ id, name, sex }, index) => (
                                 <li key={index}>
                                     <h3>id:{id};name:{name};sex:{sex};</h3>
                                 </li>
@@ -69,7 +69,7 @@ class Index extends Component {
 
 Index.propTypes = {
     addDemoData: PropTypes.func,
-    demoData: PropTypes.array
+    demoData: PropTypes.array.isRequired
 };
 
 Index = connect(

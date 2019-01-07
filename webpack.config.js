@@ -89,14 +89,7 @@ let webpackConfig = {
                 loader: 'babel-loader',
                 exclude: /node_modules/,
                 options: {
-                    cacheDirectory: true,
-                    presets: ['env', 'react', 'stage-0'],
-                    plugins: [
-                        'transform-decorators-legacy',
-                        'transform-runtime',
-                        ['import', [{ libraryName: 'antd', style: 'css' }]],
-                        'syntax-dynamic-import',
-                        'react-hot-loader/babel']
+                    cacheDirectory: true                    
                 }
             },
             {
