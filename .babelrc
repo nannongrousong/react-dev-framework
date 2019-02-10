@@ -1,12 +1,33 @@
 {
   "presets": [
-    "env",
-    "react",
-    "stage-0"
+    [
+      "@babel/preset-env",
+      {
+        "modules": false,
+        "useBuiltIns": "usage",
+        "targets": {
+          "chrome": "58",
+          "ie": "10"
+        },
+        "debug": true
+      }
+    ],
+    "@babel/preset-react"
   ],
   "plugins": [
-    "transform-decorators-legacy",
-    "transform-runtime",
+    [
+      "@babel/plugin-proposal-decorators",
+      {
+        "legacy": true
+      }
+    ],
+    [
+      "@babel/plugin-proposal-class-properties",
+      {
+        "loose": true
+      }
+    ],
+    "@babel/plugin-transform-runtime",
     [
       "import",
       {
@@ -14,7 +35,7 @@
         "style": "css"
       }
     ],
-    "syntax-dynamic-import",
+    "@babel/syntax-dynamic-import",
     "react-hot-loader/babel"
   ]
 }

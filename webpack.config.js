@@ -48,9 +48,9 @@ fs.writeFileSync(path.resolve(__dirname, 'jsconfig.json'), JSON.stringify(jsconf
 
 let webpackEntry = entries.reduce((previous, current) => {
     if (IS_DEV) {
-        previous[current.name] = ['webpack-hot-middleware/client?quiet=true&reload=true', 'babel-polyfill', path.resolve(__dirname, current.entry)];
+        previous[current.name] = ['webpack-hot-middleware/client?quiet=true&reload=true', path.resolve(__dirname, current.entry)];
     } else {
-        previous[current.name] = ['babel-polyfill', path.resolve(__dirname, current.entry)];
+        previous[current.name] = [path.resolve(__dirname, current.entry)];
     }
     return previous;
 }, {});
@@ -89,7 +89,7 @@ let webpackConfig = {
                 loader: 'babel-loader',
                 exclude: /node_modules/,
                 options: {
-                    cacheDirectory: true                    
+                    cacheDirectory: false
                 }
             },
             {

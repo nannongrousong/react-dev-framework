@@ -1,10 +1,6 @@
-import Loadable from 'react-loadable';
-import Loading from 'APP_COMPONENT/loading';
+import { lazy } from 'react';
 
 export default [{
     path: '/demo',
-    component: Loadable({
-        loader: () => import('APP_PAGES/demo'),
-        loading: Loading
-    })
+    component: lazy(() => import('APP_PAGES/demo'))
 }];

@@ -1,4 +1,6 @@
-import 'isomorphic-fetch';
+//  https://github.com/babel/babel/issues/9160
+//  babel/preset-env中不包含fetch
+import 'whatwg-fetch';
 import 'url-search-params-polyfill';
 
 /**
