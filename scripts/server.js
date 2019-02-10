@@ -76,7 +76,7 @@ if (env == dev) {
         }
         console.log('webpack success!');
 
-        if (projectConfig.deployServer) {
+        if (projectConfig.deployServer.enable) {
             const { host, username, password, path: deployPath } = projectConfig.deployServer;
             const localPath = path.resolve(__dirname, '../dist/');
             const date = new Date();

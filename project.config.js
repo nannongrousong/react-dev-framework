@@ -18,6 +18,7 @@ module.exports = {
         pathRewrite: { '^/app/api': '/' }
     }],
     deployServer: {
+        enable: false,
         host: '',
         username: '',
         password: '',
